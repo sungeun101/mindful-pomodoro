@@ -58,8 +58,12 @@ export default function Timer({
     if (videos) {
       try {
         const parsedVideos = JSON.parse(videos);
-        const shuffledVideos = parsedVideos?.sort(() => 0.5 - Math.random());
-        setVideo(shuffledVideos[0]);
+        if (Array.isArray(parsedVideos)) {
+          const shuffledVideos = parsedVideos.sort(() => 0.5 - Math.random());
+          setVideo(shuffledVideos[0]);
+        } else {
+          console.error("Parsed videos is not an array:", parsedVideos);
+        }
       } catch (error) {
         console.error("Error parsing videos from localStorage:", error);
       }

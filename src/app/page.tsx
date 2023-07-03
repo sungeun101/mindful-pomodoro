@@ -171,28 +171,40 @@ export default function Home() {
     const changedBreakLengths = uniqueBreakLengths.filter(
       (length, index) => length !== prevUniqueBreakLengths.current[index]
     );
+    console.log(" uniqueBreakLengths : ", uniqueBreakLengths);
+    console.log(" changedBreakLengths : ", changedBreakLengths);
 
-    changedBreakLengths.forEach(async (breakLength) => {
-      console.log(breakLength, "해당 비디오 있는지 없는지 검사");
-      const key = `${breakLength}min_videos`;
-      const videos = localStorage.getItem(key);
-      if (videos === "{}" || !videos) {
-        console.log(key, "localstorage에 비디오 없음, firestore에서 가져오기");
-        const videosFromFirestore = mockVideos;
-        // const videosFromFirestore = await getVideosFromFirestore(key);
-        if (videosFromFirestore && videosFromFirestore.length > 0) {
-          console.log("firestore에서 가져온", key, " : ", videosFromFirestore);
-          localStorage.setItem(key, JSON.stringify(videosFromFirestore));
+    [...uniqueBreakLengths, ...changedBreakLengths].forEach(
+      async (breakLength) => {
+        console.log(breakLength, "해당 비디오 있는지 없는지 검사");
+        const key = `${breakLength}min_videos`;
+        const videos = localStorage.getItem(key);
+        if (videos === "{}" || !videos) {
+          console.log(
+            key,
+            "localstorage에 비디오 없음, firestore에서 가져오기"
+          );
+          // const videosFromFirestore = mockVideos;
+          const videosFromFirestore = await getVideosFromFirestore(key);
+          if (videosFromFirestore && videosFromFirestore.length > 0) {
+            console.log(
+              "firestore에서 가져온",
+              key,
+              " : ",
+              videosFromFirestore
+            );
+            localStorage.setItem(key, JSON.stringify(videosFromFirestore));
+          } else {
+            console.log("firestore에 해당 비디오 없음");
+          }
         } else {
-          console.log("firestore에 해당 비디오 없음");
+          console.log("localStorage에서", key, " 가져옴");
         }
-      } else {
-        console.log("localStorage에서", key, " 가져옴");
       }
-    });
+    );
 
     prevUniqueBreakLengths.current = uniqueBreakLengths;
-  }, [uniqueBreakLengths]);
+  }, [uniqueBreakLengths, []]);
 
   const handleStartNextTimer = () => {
     setActiveStep((prevStep) => prevStep + 1);
