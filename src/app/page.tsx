@@ -10,7 +10,6 @@ import {
   useForm,
   useWatch,
 } from "react-hook-form";
-import { fetchVideos } from "./api";
 import { IYoutubeVideo } from "@/types";
 import VideoDialog from "@/components/VideoDialog";
 import { initFirebase } from "./firebase";
@@ -22,7 +21,6 @@ import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import StepContent from "@mui/material/StepContent";
-import { useLocalStorage } from "react-use";
 import { mockVideos } from "./mockData";
 
 export interface FormData {
@@ -35,7 +33,7 @@ export interface FormData {
 export default function Home() {
   const defaultPomoCount = 5;
   const defaultSessionLength = 25;
-  const defaultBreakLength = 5;
+  const defaultBreakLength = 10;
   const defaultPomos = useMemo(() => {
     const pomos = [];
     for (let i = 0; i < defaultPomoCount; i++) {
@@ -166,25 +164,25 @@ export default function Home() {
   const uniqueBreakLengths = breakLengths.filter(
     (value, index, self) => self.indexOf(value) === index
   );
-  // console.log("not duplicated breakLengths", uniqueBreakLengths);
 
-  const [localStorageVideos, setLocalStorageVideos] = useLocalStorage<any>(
-    `${defaultBreakLength}min_videos`,
-    {}
-  );
+  const prevUniqueBreakLengths = useRef(uniqueBreakLengths);
 
   useEffect(() => {
-    uniqueBreakLengths.forEach(async (breakLength) => {
+    const changedBreakLengths = uniqueBreakLengths.filter(
+      (length, index) => length !== prevUniqueBreakLengths.current[index]
+    );
+
+    changedBreakLengths.forEach(async (breakLength) => {
       console.log(breakLength, "해당 비디오 있는지 없는지 검사");
       const key = `${breakLength}min_videos`;
       const videos = localStorage.getItem(key);
-      if (videos === "{}" || videos === "[]" || !videos) {
+      if (videos === "{}" || !videos) {
         console.log(key, "localstorage에 비디오 없음, firestore에서 가져오기");
-        // const videosFromFirestore = mockVideos;
-        const videosFromFirestore = await getVideosFromFirestore(key);
-        if (videosFromFirestore) {
+        const videosFromFirestore = mockVideos;
+        // const videosFromFirestore = await getVideosFromFirestore(key);
+        if (videosFromFirestore && videosFromFirestore.length > 0) {
           console.log("firestore에서 가져온", key, " : ", videosFromFirestore);
-          setLocalStorageVideos(videosFromFirestore);
+          localStorage.setItem(key, JSON.stringify(videosFromFirestore));
         } else {
           console.log("firestore에 해당 비디오 없음");
         }
@@ -192,7 +190,9 @@ export default function Home() {
         console.log("localStorage에서", key, " 가져옴");
       }
     });
-  }, [breakLengths]);
+
+    prevUniqueBreakLengths.current = uniqueBreakLengths;
+  }, [uniqueBreakLengths]);
 
   const handleStartNextTimer = () => {
     setActiveStep((prevStep) => prevStep + 1);
@@ -335,7 +335,6 @@ export default function Home() {
                       handleOpenVideo={handleOpenVideo}
                       pomoCount={pomoCount}
                       isActiveStep={index === activeStep}
-                      localStorageVideos={localStorageVideos}
                       startNextTimer={handleStartNextTimer}
                     />
                   </StepLabel>

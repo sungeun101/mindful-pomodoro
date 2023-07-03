@@ -2,11 +2,8 @@
 
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
-import ReplayIcon from "@mui/icons-material/Replay";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
 import { useFormContext } from "react-hook-form";
 import { IYoutubeVideo } from "@/types";
 import he from "he";
@@ -18,7 +15,6 @@ export default function Timer({
   handleOpenVideo,
   pomoCount,
   isActiveStep,
-  localStorageVideos,
   startNextTimer,
 }: {
   index: number;
@@ -32,7 +28,6 @@ export default function Timer({
   handleOpenVideo: (video: IYoutubeVideo) => void;
   pomoCount: number;
   isActiveStep: boolean;
-  localStorageVideos: any;
   startNextTimer: () => void;
 }) {
   const {
@@ -63,8 +58,7 @@ export default function Timer({
     if (videos) {
       try {
         const parsedVideos = JSON.parse(videos);
-        const shuffledVideos = parsedVideos.sort(() => 0.5 - Math.random());
-
+        const shuffledVideos = parsedVideos?.sort(() => 0.5 - Math.random());
         setVideo(shuffledVideos[0]);
       } catch (error) {
         console.error("Error parsing videos from localStorage:", error);
@@ -74,7 +68,7 @@ export default function Timer({
 
   useEffect(() => {
     getUniqueVideo();
-  }, [breakLength, getUniqueVideo, localStorageVideos]);
+  }, [breakLength, getUniqueVideo]);
 
   const startTimer = () => {
     setIsWorking(true);
