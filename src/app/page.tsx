@@ -178,7 +178,7 @@ export default function Home() {
       console.log(breakLength, "해당 비디오 있는지 없는지 검사");
       const key = `${breakLength}min_videos`;
       const videos = localStorage.getItem(key);
-      if (videos === "{}" || !videos) {
+      if (videos === "{}" || videos === "[]" || !videos) {
         console.log(key, "localstorage에 비디오 없음, firestore에서 가져오기");
         // const videosFromFirestore = mockVideos;
         const videosFromFirestore = await getVideosFromFirestore(key);
