@@ -171,12 +171,13 @@ export default function Home() {
     const changedBreakLengths = uniqueBreakLengths.filter(
       (length, index) => length !== prevUniqueBreakLengths.current[index]
     );
-    console.log(" uniqueBreakLengths : ", uniqueBreakLengths);
-    console.log(" changedBreakLengths : ", changedBreakLengths);
+    console.log("해당 비디오 있는지 없는지 검사 : ", [
+      ...uniqueBreakLengths,
+      ...changedBreakLengths,
+    ]);
 
     [...uniqueBreakLengths, ...changedBreakLengths].forEach(
       async (breakLength) => {
-        console.log(breakLength, "해당 비디오 있는지 없는지 검사");
         const key = `${breakLength}min_videos`;
         const videos = localStorage.getItem(key);
         if (videos === "{}" || !videos) {
@@ -204,7 +205,7 @@ export default function Home() {
     );
 
     prevUniqueBreakLengths.current = uniqueBreakLengths;
-  }, [uniqueBreakLengths, []]);
+  }, [uniqueBreakLengths]);
 
   const handleStartNextTimer = () => {
     setActiveStep((prevStep) => prevStep + 1);
