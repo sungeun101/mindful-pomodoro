@@ -1,7 +1,7 @@
 import { IYoutubeVideo } from "@/types";
 import { NextApiRequest, NextApiResponse } from "next";
-import { app } from "../../firebase";
 import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { app } from "../../firebase";
 
 const db = getFirestore(app);
 
