@@ -2,8 +2,6 @@
 
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
-import PauseIcon from "@mui/icons-material/Pause";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { useFormContext } from "react-hook-form";
 import { IYoutubeVideo } from "@/types";
 import he from "he";
@@ -172,7 +170,7 @@ export default function Timer({
             <button
               onClick={isWorking ? pauseTimer : startTimer}
               disabled={!isValid}
-              className="bg-white text-[#EF4168] rounded-full w-12 h-12 hover:bg-white drop-shadow-lg absolute -top-5  shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer"
+              className="bg-[#81CCA5] text-[#EF4168] rounded-full w-14 h-14 absolute -top-6 hover:scale-105 transition-all duration-300 cursor-pointer border-4 border-white"
             >
               {isWorking ? (
                 <FontAwesomeIcon icon={faPause} size={"lg"} />

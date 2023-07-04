@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, use } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import {
@@ -23,6 +23,7 @@ import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import StepContent from "@mui/material/StepContent";
 import { mockVideos } from "./mockData";
+import { FirebaseError } from "firebase/app";
 
 export interface FormData {
   pomos: {
@@ -32,44 +33,13 @@ export interface FormData {
 }
 
 export default function Home() {
-  const defaultPomoCount =
-    typeof window !== "undefined"
-      ? parseInt(localStorage.getItem("defaultPomoCount") || "6")
-      : 6;
-  const defaultSessionLength =
-    typeof window !== "undefined"
-      ? parseInt(localStorage.getItem("defaultSessionLength") || "25")
-      : 25;
-  const defaultBreakLength =
-    typeof window !== "undefined"
-      ? parseInt(localStorage.getItem("defaultBreakLength") || "5")
-      : 5;
-  const defaultPomos = useMemo(() => {
-    const pomos = [];
-    for (let i = 0; i < defaultPomoCount; i++) {
-      pomos.push({
-        sessionLength: defaultSessionLength,
-        breakLength: defaultBreakLength,
-      });
-    }
-    return pomos;
-  }, []);
-
-  const methods = useForm<FormData>({
-    defaultValues: {
-      pomos: defaultPomos,
-    },
-  });
-  const { fields, append, remove } = useFieldArray({
-    control: methods.control,
-    name: "pomos",
-  });
-
   const app = initFirebase();
   const provider = new GoogleAuthProvider();
   const auth = getAuth();
   const [user, loading] = useAuthState(auth);
   const db = getFirestore(app);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const [notificationMssage, setNotificationMessage] = useState<string | null>(
     null
@@ -77,15 +47,60 @@ export default function Home() {
   const [selectedVideo, setSelectedVideo] = useState<IYoutubeVideo | null>(
     null
   );
-  const [pomoCount, setPomoCount] = useState(defaultPomoCount);
-  const [sessionLength, setSessionLength] = useState(defaultSessionLength);
-  const [breakLength, setBreakLength] = useState(defaultBreakLength);
+  const [pomoCount, setPomoCount] = useState(6);
+  const [sessionLength, setSessionLength] = useState(25);
+  const [breakLength, setBreakLength] = useState(5);
   const [activeStep, setActiveStep] = useState(0);
   const [gotNewVideoFromFirestore, setGotNewVideoFromFirestore] =
     useState(false);
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const defaultPomos = useMemo(() => {
+    const pomos = [];
+    for (let i = 0; i < pomoCount; i++) {
+      console.log("sessionLength", sessionLength, "breakLength", breakLength);
+      pomos.push({
+        sessionLength,
+        breakLength,
+      });
+    }
+    return pomos;
+  }, [breakLength, pomoCount, sessionLength]);
 
+  const methods = useForm<FormData>({
+    defaultValues: {
+      pomos: defaultPomos,
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: methods.control,
+    name: "pomos",
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      setPomoCount(parseInt(localStorage.getItem("defaultPomoCount") || "6"));
+      setSessionLength(
+        parseInt(localStorage.getItem("defaultSessionLength") || "25")
+      );
+      setBreakLength(
+        parseInt(localStorage.getItem("defaultBreakLength") || "5")
+      );
+      const updatedPomos = methods.getValues("pomos").map((pomo: any) => ({
+        ...pomo,
+        sessionLength: parseInt(
+          localStorage.getItem("defaultSessionLength") ||
+            sessionLength.toString()
+        ),
+        breakLength: parseInt(
+          localStorage.getItem("defaultBreakLength") || breakLength.toString()
+        ),
+      }));
+      methods.setValue("pomos", updatedPomos);
+    }
+  }, []);
+
+  console.log("fields", fields);
   const handleSessionLengthChange = (event: { target: { value: string } }) => {
     const selectedValue = parseInt(event.target.value, 10);
     setSessionLength(selectedValue);
@@ -111,31 +126,44 @@ export default function Home() {
   };
 
   const handlePomoCountChange = (event: { target: { value: string } }) => {
+    console.log("newPomoCount", event.target.value);
     const newPomoCount = parseInt(event.target.value);
     setPomoCount(newPomoCount);
     localStorage.setItem("defaultPomoCount", newPomoCount.toString());
-    // Add or remove pomos based on the new count
-    if (newPomoCount > fields.length) {
+  };
+
+  useEffect(() => {
+    if (pomoCount > fields.length) {
       // Add pomos
-      const diff = newPomoCount - fields.length;
+      const diff = pomoCount - fields.length;
       for (let i = 0; i < diff; i++) {
         append({
-          sessionLength: defaultSessionLength,
-          breakLength: defaultBreakLength,
+          sessionLength,
+          breakLength,
         });
       }
-    } else if (newPomoCount < fields.length) {
+    } else if (pomoCount < fields.length) {
       // Remove pomos
-      const diff = fields.length - newPomoCount;
+      const diff = fields.length - pomoCount;
       for (let i = 0; i < diff; i++) {
         remove(fields.length - 1);
       }
     }
-  };
+  }, [pomoCount, fields]);
 
   const signIn = async () => {
-    const result = await signInWithPopup(auth, provider);
-    console.log(result.user);
+    try {
+      const result = await signInWithPopup(auth, provider);
+      console.log(result.user);
+    } catch (error) {
+      if ((error as FirebaseError).code === "auth/popup-closed-by-user") {
+        // User closed the sign-in popup
+        console.log("Sign-in popup closed by user");
+      } else {
+        // Other authentication errors
+        console.error("Sign-in error:", error);
+      }
+    }
   };
 
   const logout = async () => {
@@ -273,21 +301,12 @@ export default function Home() {
           <h4 className="text-gray-500">Session Length</h4>
           <div className="flex items-center gap-2">
             <select value={sessionLength} onChange={handleSessionLengthChange}>
-              {/* {Array.from([1, 2, 3, 4, 5]).map((value) => (
-                <option
-                  key={value}
-                  value={value}
-                  defaultValue={defaultSessionLength}
-                >
-                  {value}
-                </option>
-              ))} */}
               {Array.from({ length: 12 }, (_, index) => (index + 1) * 5).map(
                 (value) => (
                   <option
                     key={value}
                     value={value}
-                    defaultValue={defaultSessionLength}
+                    defaultValue={sessionLength}
                   >
                     {value}
                   </option>
@@ -301,22 +320,9 @@ export default function Home() {
           <h4 className="text-gray-500">Break Length</h4>
           <div className="flex items-center gap-2">
             <select onChange={handleBreakLengthChange} value={breakLength}>
-              {/* {Array.from([1, 2, 3, 4, 5]).map((value) => (
-                <option
-                  key={value}
-                  value={value}
-                  defaultValue={defaultBreakLength}
-                >
-                  {value}
-                </option>
-              ))} */}
               {Array.from({ length: 12 }, (_, index) => (index + 1) * 5).map(
                 (value) => (
-                  <option
-                    key={value}
-                    value={value}
-                    defaultValue={defaultBreakLength}
-                  >
+                  <option key={value} value={value} defaultValue={breakLength}>
                     {value}
                   </option>
                 )
@@ -332,11 +338,7 @@ export default function Home() {
               {Array.from([
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
               ]).map((value) => (
-                <option
-                  key={value}
-                  value={value}
-                  defaultValue={defaultPomoCount}
-                >
+                <option key={value} value={value} defaultValue={pomoCount}>
                   {value}
                 </option>
               ))}
