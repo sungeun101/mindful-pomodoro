@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
 import ReactQueryProvider from "@/utils/react-query/provider";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,6 +20,11 @@ export default function RootLayout({
       <body className={inter.className}>
         <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
+      <Script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3433043029322945"
+        crossOrigin="anonymous"
+      ></Script>
     </html>
   );
 }

@@ -31,9 +31,9 @@ export interface FormData {
 }
 
 export default function Home() {
-  const defaultPomoCount = 5;
+  const defaultPomoCount = 6;
   const defaultSessionLength = 25;
-  const defaultBreakLength = 10;
+  const defaultBreakLength = 5;
   const defaultPomos = useMemo(() => {
     const pomos = [];
     for (let i = 0; i < defaultPomoCount; i++) {
@@ -44,6 +44,7 @@ export default function Home() {
     }
     return pomos;
   }, []);
+
   const methods = useForm<FormData>({
     defaultValues: {
       pomos: defaultPomos,
@@ -60,21 +61,41 @@ export default function Home() {
   const [user, loading] = useAuthState(auth);
   const db = getFirestore(app);
 
+  useEffect(() => {
+    localStorage.setItem(
+      "defaultSessionLength",
+      JSON.stringify(defaultSessionLength)
+    );
+    localStorage.setItem("defaultPomoCount", JSON.stringify(defaultPomoCount));
+    localStorage.setItem(
+      "defaultBreakLength",
+      JSON.stringify(defaultBreakLength)
+    );
+  }, [defaultSessionLength, defaultPomoCount, defaultBreakLength]);
+
   const [notificationMssage, setNotificationMessage] = useState<string | null>(
     null
   );
   const [selectedVideo, setSelectedVideo] = useState<IYoutubeVideo | null>(
     null
   );
-  const [pomoCount, setPomoCount] = useState(defaultPomoCount);
-  const [sessionLength, setSessionLength] = useState(defaultSessionLength);
-  const [breakLength, setBreakLength] = useState(defaultBreakLength);
+  const [pomoCount, setPomoCount] = useState(
+    parseInt(localStorage.getItem("defaultPomoCount") || "") || defaultPomoCount
+  );
+  const [sessionLength, setSessionLength] = useState(
+    localStorage.getItem("defaultSessionLength") || defaultSessionLength
+  );
+  const [breakLength, setBreakLength] = useState(
+    localStorage.getItem("defaultBreakLength") || defaultBreakLength
+  );
   const [activeStep, setActiveStep] = useState(0);
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleSessionLengthChange = (event: { target: { value: string } }) => {
     const selectedValue = parseInt(event.target.value, 10);
     setSessionLength(selectedValue);
+    localStorage.setItem("defaultSessionLength", selectedValue.toString());
     // Update the sessionLength value for all pomos in the form data
     const updatedPomos = methods.getValues("pomos").map((pomo: any) => ({
       ...pomo,
@@ -86,7 +107,7 @@ export default function Home() {
   const handleBreakLengthChange = (event: { target: { value: string } }) => {
     const selectedValue = parseInt(event.target.value, 10);
     setBreakLength(selectedValue);
-
+    localStorage.setItem("defaultBreakLength", selectedValue.toString());
     // Update the breakLength value for all pomos in the form data
     const updatedPomos = methods.getValues("pomos").map((pomo: any) => ({
       ...pomo,
@@ -98,6 +119,7 @@ export default function Home() {
   const handlePomoCountChange = (event: { target: { value: string } }) => {
     const newPomoCount = parseInt(event.target.value);
     setPomoCount(newPomoCount);
+    localStorage.setItem("defaultPomoCount", newPomoCount.toString());
     // Add or remove pomos based on the new count
     if (newPomoCount > fields.length) {
       // Add pomos

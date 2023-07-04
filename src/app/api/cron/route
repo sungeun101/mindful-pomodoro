@@ -1,7 +1,0 @@
-import handleScheduledTask from "./handleScheduledTask";
-
-const handler = async (req, res) => {
-  await handleScheduledTask(req, res);
-};
-
-export default handler;
