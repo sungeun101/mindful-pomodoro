@@ -6,6 +6,7 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import {
   FormProvider,
+  set,
   useFieldArray,
   useForm,
   useWatch,
@@ -31,9 +32,18 @@ export interface FormData {
 }
 
 export default function Home() {
-  const defaultPomoCount = 6;
-  const defaultSessionLength = 25;
-  const defaultBreakLength = 5;
+  const defaultPomoCount =
+    typeof window !== "undefined"
+      ? parseInt(localStorage.getItem("defaultPomoCount") || "6")
+      : 6;
+  const defaultSessionLength =
+    typeof window !== "undefined"
+      ? parseInt(localStorage.getItem("defaultSessionLength") || "25")
+      : 25;
+  const defaultBreakLength =
+    typeof window !== "undefined"
+      ? parseInt(localStorage.getItem("defaultBreakLength") || "5")
+      : 5;
   const defaultPomos = useMemo(() => {
     const pomos = [];
     for (let i = 0; i < defaultPomoCount; i++) {
@@ -61,34 +71,18 @@ export default function Home() {
   const [user, loading] = useAuthState(auth);
   const db = getFirestore(app);
 
-  useEffect(() => {
-    localStorage.setItem(
-      "defaultSessionLength",
-      JSON.stringify(defaultSessionLength)
-    );
-    localStorage.setItem("defaultPomoCount", JSON.stringify(defaultPomoCount));
-    localStorage.setItem(
-      "defaultBreakLength",
-      JSON.stringify(defaultBreakLength)
-    );
-  }, [defaultSessionLength, defaultPomoCount, defaultBreakLength]);
-
   const [notificationMssage, setNotificationMessage] = useState<string | null>(
     null
   );
   const [selectedVideo, setSelectedVideo] = useState<IYoutubeVideo | null>(
     null
   );
-  const [pomoCount, setPomoCount] = useState(
-    parseInt(localStorage.getItem("defaultPomoCount") || "") || defaultPomoCount
-  );
-  const [sessionLength, setSessionLength] = useState(
-    localStorage.getItem("defaultSessionLength") || defaultSessionLength
-  );
-  const [breakLength, setBreakLength] = useState(
-    localStorage.getItem("defaultBreakLength") || defaultBreakLength
-  );
+  const [pomoCount, setPomoCount] = useState(defaultPomoCount);
+  const [sessionLength, setSessionLength] = useState(defaultSessionLength);
+  const [breakLength, setBreakLength] = useState(defaultBreakLength);
   const [activeStep, setActiveStep] = useState(0);
+  const [gotNewVideoFromFirestore, setGotNewVideoFromFirestore] =
+    useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -217,6 +211,7 @@ export default function Home() {
               videosFromFirestore
             );
             localStorage.setItem(key, JSON.stringify(videosFromFirestore));
+            setGotNewVideoFromFirestore(true);
           } else {
             console.log("firestore에 해당 비디오 없음");
           }
@@ -361,9 +356,15 @@ export default function Home() {
                 <Step
                   key={field.id}
                   active={index === activeStep}
-                  className="border rounded-lg border-[#EF4168]"
+                  className="rounded-lg shadow-lg p-4"
                 >
-                  <StepLabel>
+                  <StepLabel
+                    sx={{
+                      ".MuiSvgIcon-root": {
+                        display: "none",
+                      },
+                    }}
+                  >
                     <Timer
                       index={index}
                       sendNotification={sendNotification}
@@ -371,10 +372,12 @@ export default function Home() {
                       pomoCount={pomoCount}
                       isActiveStep={index === activeStep}
                       startNextTimer={handleStartNextTimer}
+                      gotNewVideoFromFirestore={gotNewVideoFromFirestore}
+                      setGotNewVideoFromFirestore={setGotNewVideoFromFirestore}
                     />
                   </StepLabel>
 
-                  <StepContent>this only opens for activeStep</StepContent>
+                  {/* <StepContent>this only opens for activeStep</StepContent> */}
                 </Step>
               ))}
             </Stepper>

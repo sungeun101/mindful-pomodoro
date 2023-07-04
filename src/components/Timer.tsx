@@ -16,6 +16,8 @@ export default function Timer({
   pomoCount,
   isActiveStep,
   startNextTimer,
+  gotNewVideoFromFirestore,
+  setGotNewVideoFromFirestore,
 }: {
   index: number;
   sendNotification: ({
@@ -29,6 +31,8 @@ export default function Timer({
   pomoCount: number;
   isActiveStep: boolean;
   startNextTimer: () => void;
+  gotNewVideoFromFirestore: boolean;
+  setGotNewVideoFromFirestore: (value: boolean) => void;
 }) {
   const {
     register,
@@ -61,6 +65,7 @@ export default function Timer({
         if (Array.isArray(parsedVideos)) {
           const shuffledVideos = parsedVideos.sort(() => 0.5 - Math.random());
           setVideo(shuffledVideos[0]);
+          setGotNewVideoFromFirestore(false);
         } else {
           console.error("Parsed videos is not an array:", parsedVideos);
         }
@@ -72,7 +77,7 @@ export default function Timer({
 
   useEffect(() => {
     getUniqueVideo();
-  }, [breakLength, getUniqueVideo]);
+  }, [breakLength, getUniqueVideo, gotNewVideoFromFirestore]);
 
   const startTimer = () => {
     setIsWorking(true);
@@ -83,6 +88,7 @@ export default function Timer({
   };
 
   const resetTimer = () => {
+    console.log("reset");
     setMinutes(1);
     setSeconds(0);
     setIsSession(true);
@@ -147,73 +153,71 @@ export default function Timer({
   }, [isActiveStep, isWorking, minutes, seconds, isSession]);
 
   return (
-    <section>
-      {/* Timer */}
-      <div className="w-48 h-48 bg-[#EF4168] text-white rounded-full flex flex-col justify-center items-center gap-4 p-2">
-        <h2 className="pt-8">{phaseLabel}</h2>
-        <div className="text-3xl pt-2">
-          <span>{minutes?.toString().padStart(2, "0")}</span>:
-          <span>{seconds?.toString().padStart(2, "0")}</span>
+    <div className="grid 2xl:grid-cols-2 px-10">
+      <section className="flex flex-col justify-center items-center">
+        {/* Timer */}
+        <div className="w-48 h-48 bg-[#EF4168] text-white rounded-full flex flex-col justify-center items-center gap-4 p-2">
+          <h2 className="pt-8">{phaseLabel}</h2>
+          <div className="text-3xl pt-2">
+            <span>{minutes?.toString().padStart(2, "0")}</span>:
+            <span>{seconds?.toString().padStart(2, "0")}</span>
+          </div>
+          {isActiveStep && (
+            <button
+              onClick={isWorking ? pauseTimer : startTimer}
+              disabled={!isValid}
+              className="bg-white text-[#EF4168] rounded-full w-12 h-12 hover:bg-white drop-shadow-lg"
+            >
+              {isWorking ? (
+                <PauseIcon fontSize="medium" />
+              ) : (
+                <PlayArrowIcon fontSize="medium" />
+              )}
+            </button>
+          )}
         </div>
-        {isActiveStep && (
-          <button
-            onClick={isWorking ? pauseTimer : startTimer}
-            disabled={!isValid}
-            className="bg-white text-[#EF4168] rounded-full w-12 h-12 hover:bg-white drop-shadow-lg"
-          >
-            {isWorking ? (
-              <PauseIcon fontSize="medium" />
-            ) : (
-              <PlayArrowIcon fontSize="medium" />
-            )}
-          </button>
-        )}
-      </div>
-      {/* Timer Setting */}
-      <div className="flex flex-col my-3">
-        <span>
-          Session :
-          <select
-            {...register(`pomos.${index}.sessionLength`)}
-            className="bg-white text-[#EF4168] w-12 mx-1 px-1 py-1 rounded-md shadow-md cursor-pointer"
-          >
-            {Array.from([5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]).map(
-              (value) => (
-                <option key={value} value={value}>
-                  {value}
-                </option>
-              )
-            )}
-          </select>
-          mins
-        </span>
-        <span>
-          Break :
-          <select
-            {...register(`pomos.${index}.breakLength`)}
-            className="bg-white text-[#EF4168] w-12 mx-1 px-1 py-1 rounded-md shadow-md cursor-pointer"
-          >
-            {Array.from([5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]).map(
-              (value) => (
-                <option key={value} value={value}>
-                  {value}
-                </option>
-              )
-            )}
-          </select>
-          mins
-        </span>
-      </div>
+        {/* Timer Setting */}
+        <div className="flex flex-col my-3">
+          <span>
+            Session :
+            <select
+              {...register(`pomos.${index}.sessionLength`)}
+              className="bg-white text-[#EF4168] w-12 mx-1 px-1 py-1 rounded-md shadow-md cursor-pointer"
+            >
+              {Array.from([5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]).map(
+                (value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                )
+              )}
+            </select>
+            mins
+          </span>
+          <span>
+            Break :
+            <select
+              {...register(`pomos.${index}.breakLength`)}
+              className="bg-white text-[#EF4168] w-12 mx-1 px-1 py-1 rounded-md shadow-md cursor-pointer"
+            >
+              {Array.from([5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]).map(
+                (value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                )
+              )}
+            </select>
+            mins
+          </span>
+        </div>
+      </section>
 
       {video && (
-        <div className="relative">
-          <VideoShuffleDial
-            getBreakVideos={getUniqueVideo}
-            resetTimer={resetTimer}
-          />
+        <section className="relative flex flex-col justify-center items-center">
           <div
             onClick={() => handleOpenVideo(video)}
-            className="hover:scale-105 transition-all duration-300 cursor-pointer"
+            className="hover:scale-105 transition-all duration-300 cursor-pointer flex flex-col justify-center items-center bg-white  w-[320px] "
           >
             <Image
               src={video.snippet.thumbnails.medium.url}
@@ -226,9 +230,13 @@ export default function Timer({
               {he.decode(video.snippet.title)}
             </div>
             <span className="text-xs mt-2 ">{video.snippet.channelTitle}</span>
+            <VideoShuffleDial
+              getBreakVideos={getUniqueVideo}
+              resetTimer={resetTimer}
+            />
           </div>
-        </div>
+        </section>
       )}
-    </section>
+    </div>
   );
 }

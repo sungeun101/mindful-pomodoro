@@ -1,5 +1,3 @@
-import Box from "@mui/material/Box";
-import Backdrop from "@mui/material/Backdrop";
 import SpeedDial from "@mui/material/SpeedDial";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
 import ReplayIcon from "@mui/icons-material/Replay";
@@ -17,8 +15,8 @@ export default function VideoShuffleDial({
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const actions = [
-    { icon: <ReplayIcon />, name: "Reset", onClick: resetTimer },
+  const actions: any[] = [
+    // { icon: <ReplayIcon />, name: "Reset", onClick: resetTimer },
     // { icon: <SaveIcon />, name: "Save" },
     // { icon: <PrintIcon />, name: "Print" },
     // { icon: <ShareIcon />, name: "Share" },
@@ -26,10 +24,8 @@ export default function VideoShuffleDial({
   return (
     <SpeedDial
       ariaLabel="SpeedDial tooltip"
-      className="absolute top-0 right-4"
-      icon={
-        <ShuffleIcon className="text-[#EF4168] w-full h-full bg-white p-3 rounded-full hover:bg-[#EF4168] hover:text-white" />
-      }
+      sx={{ position: "absolute", top: -50, right: -30, zIndex: 10000 }}
+      icon={<ShuffleIcon />}
       onClick={getBreakVideos}
       // onClose={handleClose}
       // onOpen={handleOpen}

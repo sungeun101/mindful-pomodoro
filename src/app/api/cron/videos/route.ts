@@ -1,23 +1,11 @@
+import { app } from "@/app/firebase";
 import { IYoutubeVideo } from "@/types";
-import { NextApiRequest, NextApiResponse } from "next";
 import { doc, getFirestore, setDoc } from "firebase/firestore";
-import { app } from "../../firebase";
+import { NextRequest, NextResponse } from "next/server";
 
 const db = getFirestore(app);
 
-export default async function handleScheduledTask(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  await Promise.all(
-    Array.from({ length: 12 }, (_, index) => (index + 1) * 5).map(
-      async (breakLength) => {
-        const videos = await fetchVideos(breakLength);
-        await saveNewVideosToFirestore(videos, breakLength);
-      }
-    )
-  );
-
+export async function GET(request: NextRequest) {
   const fetchVideos = async (breakLength: number) => {
     const url = new URL("https://www.googleapis.com/youtube/v3/search");
     const params: any = {
@@ -67,7 +55,17 @@ export default async function handleScheduledTask(
     }
   };
 
-  res
-    .status(200)
-    .json({ message: "Successfully saved youtube videos to firestore" });
+  await Promise.all(
+    Array.from({ length: 12 }, (_, index) => (index + 1) * 5).map(
+      async (breakLength) => {
+        const videos = await fetchVideos(breakLength);
+        await saveNewVideosToFirestore(videos, breakLength);
+      }
+    )
+  );
+
+  return NextResponse.json({
+    status: 200,
+    message: "Videos saved to Firestore",
+  });
 }
