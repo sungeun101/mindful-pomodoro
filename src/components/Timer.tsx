@@ -8,6 +8,8 @@ import { useFormContext } from "react-hook-form";
 import { IYoutubeVideo } from "@/types";
 import he from "he";
 import VideoShuffleDial from "@/components/VideoShuffleDial";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
 
 export default function Timer({
   index,
@@ -156,8 +158,12 @@ export default function Timer({
     <div className="grid 2xl:grid-cols-2 px-10">
       <section className="flex flex-col justify-center items-center">
         {/* Timer */}
-        <div className="w-48 h-48 bg-[#EF4168] text-white rounded-full flex flex-col justify-center items-center gap-4 p-2">
-          <h2 className="pt-8">{phaseLabel}</h2>
+        <div
+          className={`w-48 h-48 ${
+            isActiveStep ? "bg-[#EF4168]" : "bg-gray-300"
+          } text-white rounded-full flex flex-col justify-center items-center gap-2 p-2 relative`}
+        >
+          <h2>{phaseLabel}</h2>
           <div className="text-3xl pt-2">
             <span>{minutes?.toString().padStart(2, "0")}</span>:
             <span>{seconds?.toString().padStart(2, "0")}</span>
@@ -166,18 +172,18 @@ export default function Timer({
             <button
               onClick={isWorking ? pauseTimer : startTimer}
               disabled={!isValid}
-              className="bg-white text-[#EF4168] rounded-full w-12 h-12 hover:bg-white drop-shadow-lg"
+              className="bg-white text-[#EF4168] rounded-full w-12 h-12 hover:bg-white drop-shadow-lg absolute -top-5  shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer"
             >
               {isWorking ? (
-                <PauseIcon fontSize="medium" />
+                <FontAwesomeIcon icon={faPause} size={"lg"} />
               ) : (
-                <PlayArrowIcon fontSize="medium" />
+                <FontAwesomeIcon icon={faPlay} size={"lg"} />
               )}
             </button>
           )}
         </div>
         {/* Timer Setting */}
-        <div className="flex flex-col my-3">
+        <div className="flex flex-col my-4 gap-2">
           <span>
             Session :
             <select
@@ -230,11 +236,11 @@ export default function Timer({
               {he.decode(video.snippet.title)}
             </div>
             <span className="text-xs mt-2 ">{video.snippet.channelTitle}</span>
-            <VideoShuffleDial
-              getBreakVideos={getUniqueVideo}
-              resetTimer={resetTimer}
-            />
           </div>
+          <VideoShuffleDial
+            getBreakVideos={getUniqueVideo}
+            resetTimer={resetTimer}
+          />
         </section>
       )}
     </div>

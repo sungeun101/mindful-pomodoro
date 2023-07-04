@@ -1,8 +1,7 @@
-import SpeedDial from "@mui/material/SpeedDial";
-import ShuffleIcon from "@mui/icons-material/Shuffle";
-import ReplayIcon from "@mui/icons-material/Replay";
-import { useState } from "react";
-import { SpeedDialAction } from "@mui/material";
+"use client";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShuffle } from "@fortawesome/free-solid-svg-icons";
 
 export default function VideoShuffleDial({
   getBreakVideos,
@@ -11,35 +10,12 @@ export default function VideoShuffleDial({
   getBreakVideos: () => void;
   resetTimer: () => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const actions: any[] = [
-    // { icon: <ReplayIcon />, name: "Reset", onClick: resetTimer },
-    // { icon: <SaveIcon />, name: "Save" },
-    // { icon: <PrintIcon />, name: "Print" },
-    // { icon: <ShareIcon />, name: "Share" },
-  ];
   return (
-    <SpeedDial
-      ariaLabel="SpeedDial tooltip"
-      sx={{ position: "absolute", top: -50, right: -30, zIndex: 10000 }}
-      icon={<ShuffleIcon />}
+    <button
       onClick={getBreakVideos}
-      // onClose={handleClose}
-      // onOpen={handleOpen}
-      // open={open}
+      className="bg-white text-[#EF4168] rounded-full w-12 h-12 hover:bg-white drop-shadow-lg absolute top-10 -right-20 hover:scale-105 transition-all duration-300 cursor-pointer"
     >
-      {actions.map((action) => (
-        <SpeedDialAction
-          key={action.name}
-          icon={action.icon}
-          tooltipTitle={action.name}
-          tooltipOpen
-          onClick={handleClose}
-        />
-      ))}
-    </SpeedDial>
+      <FontAwesomeIcon icon={faShuffle} size={"lg"} />
+    </button>
   );
 }
