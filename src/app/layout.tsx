@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   title: "Mindful Pomodoro",
   description:
-    "Pomodoro Timer with Yoga and Stretching Videos During Break Time.",
+    "Pomodoro Timer with Yoga and Stretching Videos During Break Time. Discover the benefits of moving around during break time for increased productivity. Learn how regular breaks can enhance focus and overall well-being.",
 };
 
 export default function RootLayout({

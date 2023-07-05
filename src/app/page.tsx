@@ -24,6 +24,7 @@ import StepContent from "@mui/material/StepContent";
 import { mockVideos } from "./mockData";
 import { FirebaseError } from "firebase/app";
 import { useMediaQuery } from "@mui/material";
+import Article from "@/components/Article";
 
 export interface FormData {
   pomos: {
@@ -394,6 +395,8 @@ export default function Home() {
           </FormProvider>
         </div>
       </main>
+
+      <Article />
 
       <VideoDialog video={selectedVideo} setVideo={setSelectedVideo} />
 
