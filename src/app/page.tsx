@@ -1,12 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect, useRef, useMemo, use } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import {
   FormProvider,
-  set,
   useFieldArray,
   useForm,
   useWatch,
@@ -24,6 +23,7 @@ import StepLabel from "@mui/material/StepLabel";
 import StepContent from "@mui/material/StepContent";
 import { mockVideos } from "./mockData";
 import { FirebaseError } from "firebase/app";
+import { useMediaQuery } from "@mui/material";
 
 export interface FormData {
   pomos: {
@@ -100,7 +100,6 @@ export default function Home() {
     }
   }, []);
 
-  console.log("fields", fields);
   const handleSessionLengthChange = (event: { target: { value: string } }) => {
     const selectedValue = parseInt(event.target.value, 10);
     setSessionLength(selectedValue);
@@ -208,6 +207,7 @@ export default function Home() {
   const uniqueBreakLengths = breakLengths.filter(
     (value, index, self) => self.indexOf(value) === index
   );
+  console.log("uniqueBreakLengths", uniqueBreakLengths);
 
   const prevUniqueBreakLengths = useRef(uniqueBreakLengths);
 
@@ -215,12 +215,14 @@ export default function Home() {
     const changedBreakLengths = uniqueBreakLengths.filter(
       (length, index) => length !== prevUniqueBreakLengths.current[index]
     );
+    console.log("changedBreakLengths", changedBreakLengths);
     console.log("해당 비디오 있는지 없는지 검사 : ", [
       ...uniqueBreakLengths,
       ...changedBreakLengths,
     ]);
 
-    [...uniqueBreakLengths, ...changedBreakLengths].forEach(
+    uniqueBreakLengths.forEach(
+      // [...uniqueBreakLengths, ...changedBreakLengths].
       async (breakLength) => {
         const key = `${breakLength}min_videos`;
         const videos = localStorage.getItem(key);
@@ -257,47 +259,53 @@ export default function Home() {
   };
 
   return (
-    <div className="relative bg-white text-[#1F1B2E] min-h-screen w-full font-mono px-20 py-28">
+    <div className="relative bg-white text-[#1F1B2E] font-mono  py-28">
       {/* Top navigation */}
-      <div className="fixed top-0 left-0 w-full py-2 px-10 bg-white shadow-sm flex items-center justify-between z-100">
-        <Image
-          src="/logo.png"
-          alt="Pomodoro Logo"
-          width={100}
-          height={24}
-          priority
-        />
-        {user ? (
-          <div className="flex items-center space-x-2">
-            {user.photoURL && (
-              <Image
-                src={user.photoURL}
-                alt="User Profile"
-                width={28}
-                height={28}
-                className="rounded-full"
-              />
-            )}
-            <span>{user.displayName}</span>
-            <button
-              onClick={logout}
-              className="border border-[#EF4168] text-[#EF4168]  rounded-md px-2 h-10 shadow-sm"
-            >
-              Logout
-            </button>
+      <div className="fixed top-0 left-0 w-full bg-white shadow-sm z-50">
+        <div className="flex items-center px-4 py-2">
+          <div>
+            <Image
+              src="/logo.png"
+              alt="Pomodoro Logo"
+              width={100}
+              height={24}
+              priority
+            />
           </div>
-        ) : (
-          <button
-            onClick={signIn}
-            className="border border-[#EF4168] text-[#EF4168]  rounded-md px-2 h-10 shadow-sm"
-          >
-            Login
-          </button>
-        )}
+          <div className="flex items-center space-x-4 ml-auto">
+            {user ? (
+              <div className="flex items-center space-x-2">
+                {user.photoURL && (
+                  <Image
+                    src={user.photoURL}
+                    alt="User Profile"
+                    width={28}
+                    height={28}
+                    className="rounded-full"
+                  />
+                )}
+                <span>{user.displayName}</span>
+                <button
+                  onClick={logout}
+                  className="border border-[#EF4168] text-[#EF4168]  rounded-md px-2 h-10 shadow-sm"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={signIn}
+                className="border border-[#EF4168] text-[#EF4168]  rounded-md px-2 h-10 shadow-sm"
+              >
+                Login
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       <main className="flex flex-col gap-4">
-        <div className="flex flex-col items-center ml-4">
+        <div className="flex flex-col items-center">
           <h4 className="text-gray-500">Session Length</h4>
           <div className="flex items-center gap-2">
             <select value={sessionLength} onChange={handleSessionLengthChange}>
@@ -316,7 +324,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center ml-4">
+        <div className="flex flex-col items-center">
           <h4 className="text-gray-500">Break Length</h4>
           <div className="flex items-center gap-2">
             <select onChange={handleBreakLengthChange} value={breakLength}>
@@ -331,7 +339,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center ml-4">
+        <div className="flex flex-col items-center">
           <h4 className="text-gray-500">Pomos</h4>
           <div className="flex items-center gap-2">
             <select onChange={handlePomoCountChange} value={pomoCount}>
@@ -346,14 +354,14 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center ml-4">
+        <div className="flex flex-col items-center">
           <h4 className="text-gray-500">Completed</h4>
           {activeStep}
         </div>
 
-        <div className="flex flex-col items-center ml-4">
+        <div className="flex flex-col items-center">
           <FormProvider {...methods}>
-            <Stepper activeStep={activeStep} orientation="vertical">
+            <Stepper activeStep={activeStep} orientation={"vertical"}>
               {fields.map((field, index) => (
                 <Step
                   key={field.id}

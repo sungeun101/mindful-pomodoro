@@ -49,6 +49,7 @@ export default function Timer({
   const [isWorking, setIsWorking] = useState(index > 0);
   const [isSessionStarted, setIsSessionStarted] = useState(false);
   const [video, setVideo] = useState<IYoutubeVideo | null>(null);
+  const [isThisPomoFinished, setIsThisPomoFinished] = useState(false);
 
   const phaseLabel = isSession
     ? `Session ${index + 1 + "/" + pomoCount}`
@@ -113,7 +114,7 @@ export default function Timer({
         if (isSession) {
           // Session is over
           setIsSession(false);
-          setMinutes(1);
+          setMinutes(breakLength);
           sendNotification({
             message: "Enjoy your break!",
             audio: "/alarm_finish.mp3",
@@ -122,10 +123,10 @@ export default function Timer({
         } else {
           // Break is over
           clearInterval(interval);
-          if (index < pomoCount - 1) {
-            // if there are more pomos, start next one
-            startNextTimer();
-            setVideo(null); // Hide video
+          setIsThisPomoFinished(true);
+          startNextTimer();
+          if (index > pomoCount - 1) {
+            // if there are more pomos
           } else {
             // last pomo
             sendNotification({
@@ -153,7 +154,7 @@ export default function Timer({
   }, [isActiveStep, isWorking, minutes, seconds, isSession]);
 
   return (
-    <div className="grid 2xl:grid-cols-2 px-10">
+    <div className="relative grid lg:grid-cols-2 py-5 lg:gap-x-6 lg:px-4">
       <section className="flex flex-col justify-center items-center">
         {/* Timer */}
         <div
@@ -187,6 +188,9 @@ export default function Timer({
             <select
               {...register(`pomos.${index}.sessionLength`)}
               className="bg-white text-[#EF4168] w-12 mx-1 px-1 py-1 rounded-md shadow-md cursor-pointer"
+              disabled={
+                (isActiveStep && isWorking && isSession) || isThisPomoFinished
+              }
             >
               {Array.from([5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]).map(
                 (value) => (
@@ -203,6 +207,9 @@ export default function Timer({
             <select
               {...register(`pomos.${index}.breakLength`)}
               className="bg-white text-[#EF4168] w-12 mx-1 px-1 py-1 rounded-md shadow-md cursor-pointer"
+              disabled={
+                (isActiveStep && isWorking && !isSession) || isThisPomoFinished
+              }
             >
               {Array.from([5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]).map(
                 (value) => (
@@ -218,10 +225,12 @@ export default function Timer({
       </section>
 
       {video && (
-        <section className="relative flex flex-col justify-center items-center">
+        <section className="relatvie flex flex-col justify-center items-center">
           <div
             onClick={() => handleOpenVideo(video)}
-            className="hover:scale-105 transition-all duration-300 cursor-pointer flex flex-col justify-center items-center bg-white  w-[320px] "
+            className={`hover:scale-105 transition-all duration-300 cursor-pointer flex flex-col justify-center items-center bg-white w-[310px] ${
+              isThisPomoFinished ? "grayscale" : ""
+            }`}
           >
             <Image
               src={video.snippet.thumbnails.medium.url}
@@ -235,6 +244,7 @@ export default function Timer({
             </div>
             <span className="text-xs mt-2 ">{video.snippet.channelTitle}</span>
           </div>
+
           <VideoShuffleDial
             getBreakVideos={getUniqueVideo}
             resetTimer={resetTimer}
