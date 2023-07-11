@@ -1,5 +1,5 @@
 import { app } from "@/app/firebase";
-import { IYoutubeVideo } from "@/types";
+import { IYoutubeVideo } from "@/types/Video";
 import { doc, getFirestore, setDoc } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 

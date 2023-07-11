@@ -7,6 +7,7 @@ module.exports = {
       "marketplace.canva.com",
       "i.ytimg.com",
       "lh3.googleusercontent.com",
+      "cdn.sanity.io",
     ],
   },
 };

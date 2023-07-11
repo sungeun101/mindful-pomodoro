@@ -3,9 +3,9 @@
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
 import { useFormContext } from "react-hook-form";
-import { IYoutubeVideo } from "@/types";
+import { IYoutubeVideo } from "@/types/Video";
 import he from "he";
-import VideoShuffleDial from "@/components/VideoShuffleDial";
+import VideoShuffleDial from "@/app/components/VideoShuffleDial";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
 
@@ -42,7 +42,6 @@ export default function Timer({
 
   const sessionLength = watch(`pomos.${index}.sessionLength`);
   const breakLength = watch(`pomos.${index}.breakLength`);
-
   const [minutes, setMinutes] = useState(sessionLength | 0);
   const [seconds, setSeconds] = useState(0);
   const [isSession, setIsSession] = useState(true);
@@ -59,7 +58,7 @@ export default function Timer({
     const breakLength = watch(`pomos.${index}.breakLength`);
     const key = `${breakLength}min_videos`;
     const videos = localStorage.getItem(key);
-
+    // If there are videos in localStorage, get a random one
     if (videos) {
       try {
         const parsedVideos = JSON.parse(videos);

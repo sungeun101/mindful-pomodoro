@@ -1,4 +1,4 @@
-import { IYoutubeVideo } from "@/types";
+import { IYoutubeVideo } from "@/types/Video";
 import {
   Button,
   Dialog,
