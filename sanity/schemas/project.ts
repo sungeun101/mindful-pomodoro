@@ -36,7 +36,20 @@ const project = {
       name: "content",
       title: "Content",
       type: "array",
-      of: [{ type: "block" }],
+      of: [
+        {
+          type: "block",
+          styles: [
+            { title: "Normal", value: "normal" },
+            { title: "Content Section Header", value: "h2" },
+            { title: "Secondary Header", value: "h3" },
+            { title: "Quote", value: "blockquote" },
+          ],
+        },
+        {
+          type: "image",
+        },
+      ],
     },
   ],
 };

@@ -33,9 +33,6 @@
 // }
 
 // export default function Home() {
-//   const projects = getProjects();
-//   console.log(projects);
-
 //   const app = initFirebase();
 //   const provider = new GoogleAuthProvider();
 //   const auth = getAuth();
@@ -426,6 +423,7 @@ import React from "react";
 import { getProjects } from "../../../sanity/utils/project";
 import Link from "next/link";
 import Image from "next/image";
+import { urlFor } from "../../../sanity/lib/urlFor";
 
 export default async function Home() {
   const projects = await getProjects();
@@ -434,20 +432,20 @@ export default async function Home() {
     <div>
       <h1 className="text-7xl font-extrabold">
         Welcome to
-        <span className="bg-gradient-to-r from-[#EB725A] via-[#EF4168] to-[#81CCA5] bg-clip-text text-transparent">
-          {" "}
+        <div className="bg-gradient-to-r from-[#EB725A] via-[#EF4168] to-[#81CCA5] bg-clip-text text-transparent">
           Pomodoro Yoga
-        </span>
+        </div>
       </h1>
       <p className="mt-3 text-xl text-gray-600 dark:text-white">
         Optimize your work intervals, taking breaks to engage in mindful yoga
         poses, stretching, or breathing exercises.
       </p>
+
       <h2 className="mt-24 font-bold text-gray-700 dark:text-white text-3xl">
         Tips for Getting Started
       </h2>
 
-      <div className="mt-5 grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {projects.map((project) => (
           <Link
             href={`/projects/${project.slug}`}
@@ -456,16 +454,24 @@ export default async function Home() {
           >
             {project.image && (
               <Image
-                src={project.image}
+                // src={project.image}
+                src={urlFor(project.image).url()}
                 alt={project.name}
                 width={750}
                 height={300}
-                className="object-cover rounded-lg border border-gray-500"
+                className="object-cover rounded-lg border border-gray-500 h-[200px] w-[750px]"
               />
             )}
             <div className="mt-2 font-extrabold bg-gradient-to-r from-[#EB725A] via-[#EF4168] to-[#81CCA5] bg-clip-text text-transparent">
               {project.name}
             </div>
+            <p className="text-gray-500">
+              {new Date(project._createdAt).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </p>
           </Link>
         ))}
       </div>

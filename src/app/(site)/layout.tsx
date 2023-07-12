@@ -23,7 +23,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className="max-w-3xl mx-auto py-10">
+      <body className="max-w-4xl mx-auto py-10 px-10">
         <ReactQueryProvider>
           <header className="flex items-center justify-between">
             <Link
@@ -32,7 +32,7 @@ export default async function RootLayout({
             >
               Pomodoro Yoga
             </Link>
-            <div className="flex items-center gap-5 text-sm text-gray-600 dark:text-white">
+            {/* <div className="flex items-center gap-5 text-sm text-gray-600 dark:text-white">
               {pages.map((page) => (
                 <Link
                   key={page._id}
@@ -42,7 +42,7 @@ export default async function RootLayout({
                   {page.title}
                 </Link>
               ))}
-            </div>
+            </div> */}
           </header>
           <main className="py-20">{children}</main>
         </ReactQueryProvider>
