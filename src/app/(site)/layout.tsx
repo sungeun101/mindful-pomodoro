@@ -32,7 +32,7 @@ export default async function RootLayout({
             >
               Pomodoro Yoga
             </Link>
-            {/* <div className="flex items-center gap-5 text-sm text-gray-600 dark:text-white">
+            <div className="flex items-center gap-5 text-sm text-gray-600 dark:text-white">
               {pages.map((page) => (
                 <Link
                   key={page._id}
@@ -42,7 +42,7 @@ export default async function RootLayout({
                   {page.title}
                 </Link>
               ))}
-            </div> */}
+            </div>
           </header>
           <main className="py-20">{children}</main>
         </ReactQueryProvider>

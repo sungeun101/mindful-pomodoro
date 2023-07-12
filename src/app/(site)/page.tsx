@@ -430,18 +430,35 @@ export default async function Home() {
   console.log(projects);
   return (
     <div>
-      <h1 className="text-7xl font-extrabold">
+      <h1 className="text-3xl md:text-5xl font-extrabold">
         Welcome to
-        <div className="bg-gradient-to-r from-[#EB725A] via-[#EF4168] to-[#81CCA5] bg-clip-text text-transparent">
+        <div className="text-5xl md:text-7xl bg-gradient-to-r from-[#EB725A] via-[#EF4168] to-[#81CCA5] bg-clip-text text-transparent">
           Pomodoro Yoga
         </div>
       </h1>
-      <p className="mt-3 text-xl text-gray-600 dark:text-white">
-        Optimize your work intervals, taking breaks to engage in mindful yoga
-        poses, stretching, or breathing exercises.
-      </p>
 
-      <h2 className="mt-24 font-bold text-gray-700 dark:text-white text-3xl">
+      <header className="flex flex-col items-start justify-center sm:flex-row gap-2 mt-3">
+        <p className="text-xl text-gray-600 dark:text-white">
+          Optimize your work intervals, taking breaks to engage in mindful yoga
+          poses, stretching, or breathing exercises.
+        </p>
+        <Link
+          href={"/yoga"}
+          className="hover:bg-gray-100 rounded-lg hover:text-gray-500 font-bold py-3 px-4 whitespace-nowrap bg-[#EF4168] text-pink-100 transition cursor-pointer"
+        >
+          Try it out
+        </Link>
+      </header>
+
+      <Image
+        src="/yoga.png"
+        alt="yoga"
+        width={750}
+        height={600}
+        className="sm:mt-3 md:mt-6 lg:mt-12 object-contain rounded-lg h-[600px] w-full mx-auto"
+      />
+
+      <h2 className="mt-20 font-bold text-gray-700 dark:text-white text-2xl md:text-3xl">
         Tips for Getting Started
       </h2>
 
@@ -459,7 +476,7 @@ export default async function Home() {
                 alt={project.name}
                 width={750}
                 height={300}
-                className="object-cover rounded-lg border border-gray-500 h-[200px] w-[750px]"
+                className="object-cover rounded-lg h-[200px] w-[750px]"
               />
             )}
             <div className="mt-2 font-extrabold bg-gradient-to-r from-[#EB725A] via-[#EF4168] to-[#81CCA5] bg-clip-text text-transparent">
