@@ -437,7 +437,7 @@ export default async function Home() {
         </div>
       </h1>
 
-      <header className="flex flex-col items-start justify-center sm:flex-row gap-2 mt-3">
+      <header className="flex flex-col items-start sm:flex-row sm:items-center gap-2 mt-3">
         <p className="text-xl text-gray-600 dark:text-white">
           Optimize your work intervals, taking breaks to engage in mindful yoga
           poses, stretching, or breathing exercises.
@@ -454,8 +454,8 @@ export default async function Home() {
         src="/yoga.png"
         alt="yoga"
         width={750}
-        height={600}
-        className="sm:mt-3 md:mt-6 lg:mt-12 object-contain rounded-lg h-[600px] w-full mx-auto"
+        height={570}
+        className="mt-2 sm:mt-4 md:mt-6 lg:mt-12 object-contain rounded-lg h-[570px] w-full mx-auto"
       />
 
       <h2 className="mt-20 font-bold text-gray-700 dark:text-white text-2xl md:text-3xl">

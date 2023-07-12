@@ -236,7 +236,7 @@ export default function Timer({
               width={video.snippet.thumbnails.medium.width}
               height={video.snippet.thumbnails.medium.height}
               alt="Youtube Video thumbnail to show during each break time"
-              className="mx-auto rounded-lg"
+              className="rounded-lg"
             />
             <div className="text-lg mt-2 font-bold">
               {he.decode(video.snippet.title)}

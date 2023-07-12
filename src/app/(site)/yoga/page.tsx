@@ -308,7 +308,7 @@ export default function TimerPage() {
                 <Step
                   key={field.id}
                   active={index === activeStep}
-                  className="rounded-lg shadow-lg p-4 bg-white"
+                  className="rounded-lg shadow-lg px-4 bg-white"
                 >
                   <StepLabel
                     sx={{
