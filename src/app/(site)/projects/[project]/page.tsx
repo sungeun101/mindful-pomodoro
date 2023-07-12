@@ -55,9 +55,12 @@ export default async function PostPage({ params }: Props) {
         <h3 className="text-2xl mt-6 mb-2">{children}</h3>
       ),
       h4: ({ children }: any) => <h4 className="text-xl">{children}</h4>,
-      h5: ({ children }: any) => <h5 className="text-lg">{children}</h5>,
-      h6: ({ children }: any) => <h6 className="text-md">{children}</h6>,
-      normal: ({ children }: any) => <p className="text-base">{children}</p>,
+      h5: ({ children }: any) => <h5 className="text-[19px]">{children}</h5>,
+      h6: ({ children }: any) => <h6 className="text-lg">{children}</h6>,
+      normal: ({ children }: any) => <p className="text-md p-1">{children}</p>,
+      intro: ({ children }: any) => (
+        <p className="text-2xl mt-8 mb-4">{children}</p>
+      ),
       blockquote: ({ children }: any) => (
         <blockquote className="border-l-purple-500">{children}</blockquote>
       ),

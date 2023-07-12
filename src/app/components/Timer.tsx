@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useFormContext } from "react-hook-form";
 import { IYoutubeVideo } from "@/types/Video";
 import he from "he";
@@ -40,9 +40,9 @@ export default function Timer({
     watch,
   } = useFormContext();
 
-  const sessionLength = watch(`pomos.${index}.sessionLength`);
-  const breakLength = watch(`pomos.${index}.breakLength`);
-  const [minutes, setMinutes] = useState(sessionLength | 0);
+  const sessionLength = parseInt(watch(`pomos.${index}.sessionLength`));
+  const breakLength = parseInt(watch(`pomos.${index}.breakLength`));
+  const [minutes, setMinutes] = useState(sessionLength || 0);
   const [seconds, setSeconds] = useState(0);
   const [isSession, setIsSession] = useState(true);
   const [isWorking, setIsWorking] = useState(index > 0);
@@ -55,7 +55,6 @@ export default function Timer({
     : "Break";
 
   const getUniqueVideo = useCallback(async () => {
-    const breakLength = watch(`pomos.${index}.breakLength`);
     const key = `${breakLength}min_videos`;
     const videos = localStorage.getItem(key);
     // If there are videos in localStorage, get a random one
@@ -79,21 +78,19 @@ export default function Timer({
     getUniqueVideo();
   }, [breakLength, getUniqueVideo, gotNewVideoFromFirestore]);
 
-  const startTimer = () => {
-    setIsWorking(true);
-  };
+  useEffect(() => {
+    if (sessionLength) {
+      setMinutes(sessionLength);
+    }
+  }, [sessionLength]);
 
-  const pauseTimer = () => {
-    setIsWorking(false);
-  };
-
-  const resetTimer = () => {
-    console.log("reset");
-    setMinutes(1);
-    setSeconds(0);
-    setIsSession(true);
-    setIsWorking(false);
-  };
+  const timerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    // Scroll to the Timer component when it becomes active
+    if (isActiveStep && isWorking && timerRef.current) {
+      timerRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [isActiveStep, isWorking]);
 
   useEffect(() => {
     let interval: any = null;
@@ -124,14 +121,14 @@ export default function Timer({
           clearInterval(interval);
           setIsThisPomoFinished(true);
           startNextTimer();
-          if (index > pomoCount - 1) {
-            // if there are more pomos
-          } else {
-            // last pomo
+          if (index === pomoCount - 1) {
+            // All pomos are finished
             sendNotification({
               message: "Well done!",
               audio: "/alarm_claps.mp3",
             });
+          } else {
+            // If there are still pomos left
           }
         }
       } else {
@@ -152,8 +149,27 @@ export default function Timer({
     return () => clearInterval(interval);
   }, [isActiveStep, isWorking, minutes, seconds, isSession]);
 
+  const startTimer = () => {
+    setIsWorking(true);
+  };
+
+  const pauseTimer = () => {
+    setIsWorking(false);
+  };
+
+  const resetTimer = () => {
+    console.log("reset");
+    setMinutes(1);
+    setSeconds(0);
+    setIsSession(true);
+    setIsWorking(false);
+  };
+
   return (
-    <div className="relative grid lg:grid-cols-2 py-5 lg:gap-x-6 lg:px-4">
+    <div
+      ref={timerRef}
+      className="relative grid lg:grid-cols-2 py-5 lg:gap-x-6 lg:px-4"
+    >
       <section className="flex flex-col justify-center items-center">
         {/* Timer */}
         <div
@@ -180,13 +196,14 @@ export default function Timer({
             </button>
           )}
         </div>
+
         {/* Timer Setting */}
         <div className="flex flex-col my-4 gap-2">
           <span>
             Session :
             <select
               {...register(`pomos.${index}.sessionLength`)}
-              className="bg-white text-[#EF4168] w-12 mx-1 px-1 py-1 rounded-md shadow-md cursor-pointer"
+              className="bg-white text-[#EF4168] w-12 mx-1 px-1 py-1 rounded-md shadow-md cursor-pointer disabled:cursor-not-allowed"
               disabled={
                 (isActiveStep && isWorking && isSession) || isThisPomoFinished
               }
@@ -205,7 +222,7 @@ export default function Timer({
             Break :
             <select
               {...register(`pomos.${index}.breakLength`)}
-              className="bg-white text-[#EF4168] w-12 mx-1 px-1 py-1 rounded-md shadow-md cursor-pointer"
+              className="bg-white text-[#EF4168] w-12 mx-1 px-1 py-1 rounded-md shadow-md cursor-pointer disabled:cursor-not-allowed"
               disabled={
                 (isActiveStep && isWorking && !isSession) || isThisPomoFinished
               }

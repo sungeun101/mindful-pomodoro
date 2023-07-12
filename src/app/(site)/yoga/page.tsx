@@ -248,9 +248,15 @@ export default function TimerPage() {
     <div className="relative">
       <main className="flex flex-col gap-4">
         <div className="flex flex-col items-center">
-          <h4 className="text-gray-500">Session Length</h4>
+          <h4 className="text-lg bg-gradient-to-r from-[#EB725A] via-[#EF4168] to-[#81CCA5] bg-clip-text text-transparent">
+            Session Length
+          </h4>
           <div className="flex items-center gap-2">
-            <select value={sessionLength} onChange={handleSessionLengthChange}>
+            <select
+              value={sessionLength}
+              onChange={handleSessionLengthChange}
+              className="bg-white text-[#EF4168] w-12 mx-1 px-1 py-1 rounded-md shadow-md cursor-pointer"
+            >
               {Array.from({ length: 12 }, (_, index) => (index + 1) * 5).map(
                 (value) => (
                   <option
@@ -267,9 +273,15 @@ export default function TimerPage() {
         </div>
 
         <div className="flex flex-col items-center">
-          <h4 className="text-gray-500">Break Length</h4>
+          <h4 className="text-lg bg-gradient-to-r from-[#EB725A] via-[#EF4168] to-[#81CCA5] bg-clip-text text-transparent">
+            Break Length
+          </h4>
           <div className="flex items-center gap-2">
-            <select onChange={handleBreakLengthChange} value={breakLength}>
+            <select
+              onChange={handleBreakLengthChange}
+              value={breakLength}
+              className="bg-white text-[#EF4168] w-12 mx-1 px-1 py-1 rounded-md shadow-md cursor-pointer"
+            >
               {Array.from({ length: 12 }, (_, index) => (index + 1) * 5).map(
                 (value) => (
                   <option key={value} value={value} defaultValue={breakLength}>
@@ -282,9 +294,15 @@ export default function TimerPage() {
         </div>
 
         <div className="flex flex-col items-center">
-          <h4 className="text-gray-500">Pomos</h4>
+          <h4 className="text-lg bg-gradient-to-r from-[#EB725A] via-[#EF4168] to-[#81CCA5] bg-clip-text text-transparent">
+            Pomos
+          </h4>
           <div className="flex items-center gap-2">
-            <select onChange={handlePomoCountChange} value={pomoCount}>
+            <select
+              onChange={handlePomoCountChange}
+              value={pomoCount}
+              className="bg-white text-[#EF4168] w-12 mx-1 px-1 py-1 rounded-md shadow-md cursor-pointer"
+            >
               {Array.from([
                 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
               ]).map((value) => (
@@ -297,7 +315,9 @@ export default function TimerPage() {
         </div>
 
         <div className="flex flex-col items-center">
-          <h4 className="text-gray-500">Completed</h4>
+          <h4 className="text-lg bg-gradient-to-r from-[#EB725A] via-[#EF4168] to-[#81CCA5] bg-clip-text text-transparent">
+            Completed
+          </h4>
           {activeStep}
         </div>
 
