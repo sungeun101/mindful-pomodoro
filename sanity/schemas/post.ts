@@ -1,72 +1,62 @@
-import { defineField, defineType } from "sanity";
-
-export default defineType({
+const post = {
   name: "post",
   title: "Post",
   type: "document",
   fields: [
-    defineField({
-      name: "title",
-      title: "Title",
+    {
+      name: "name",
+      title: "Name",
       type: "string",
-    }),
-    defineField({
+    },
+    {
       name: "slug",
       title: "Slug",
       type: "slug",
-      options: {
-        source: "title",
-        maxLength: 96,
-      },
-    }),
-    defineField({
-      name: "author",
-      title: "Author",
-      type: "reference",
-      to: { type: "author" },
-    }),
-    defineField({
-      name: "mainImage",
-      title: "Main image",
+      options: { source: "name" },
+    },
+    {
+      name: "image",
+      title: "Image",
       type: "image",
-      options: {
-        hotspot: true,
-      },
+      options: { hotspot: true },
       fields: [
         {
           name: "alt",
+          title: "Alt",
           type: "string",
-          title: "Alternative Text",
         },
       ],
-    }),
-    defineField({
-      name: "categories",
-      title: "Categories",
+    },
+    {
+      name: "url",
+      title: "URL",
+      type: "url",
+    },
+    {
+      name: "content",
+      title: "Content",
       type: "array",
-      of: [{ type: "reference", to: { type: "category" } }],
-    }),
-    defineField({
-      name: "publishedAt",
-      title: "Published at",
-      type: "datetime",
-    }),
-    defineField({
-      name: "body",
-      title: "Body",
-      type: "blockContent",
-    }),
+      of: [
+        {
+          type: "block",
+          styles: [
+            { title: "Normal", value: "normal" },
+            { title: "h1", value: "h1" },
+            { title: "h2", value: "h2" },
+            { title: "h3", value: "h3" },
+            { title: "h4", value: "h4" },
+            { title: "h5", value: "h5" },
+            { title: "h6", value: "h6" },
+            { title: "Intro/Conclusion", value: "intro" },
+            { title: "Quote", value: "blockquote" },
+          ],
+        },
+        {
+          type: "image",
+        },
+      ],
+    },
   ],
+};
 
-  preview: {
-    select: {
-      title: "title",
-      author: "author.name",
-      media: "mainImage",
-    },
-    prepare(selection) {
-      const { author } = selection;
-      return { ...selection, subtitle: author && `by ${author}` };
-    },
-  },
-});
+export default post;

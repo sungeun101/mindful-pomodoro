@@ -357,8 +357,6 @@ export default function TimerPage() {
         </div>
       </main>
 
-      {/* <projects /> */}
-
       <VideoDialog video={selectedVideo} setVideo={setSelectedVideo} />
 
       {/* Snackbar for notifications */}

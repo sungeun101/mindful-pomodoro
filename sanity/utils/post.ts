@@ -3,7 +3,7 @@ import { client } from "../lib/client";
 import { Post } from "@/types/Post";
 
 export async function getPosts(): Promise<Post[]> {
-  const data = client.fetch(groq`*[_type == "project"]{
+  const data = client.fetch(groq`*[_type == "post"]{
     _id,
     _createdAt,
     name,
@@ -17,7 +17,7 @@ export async function getPosts(): Promise<Post[]> {
 
 export async function getPost(slug: string): Promise<Post> {
   const data = await client.fetch(
-    groq`*[_type == "project" && slug.current == $slug][0]{
+    groq`*[_type == "post" && slug.current == $slug][0]{
     _id,
     _createdAt,
     name,

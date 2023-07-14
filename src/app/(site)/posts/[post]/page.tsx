@@ -3,16 +3,31 @@ import { getPost } from "../../../../../sanity/utils/post";
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 import { urlFor } from "../../../../../sanity/lib/urlFor";
+import { client } from "../../../../../sanity/lib/client";
+import { groq } from "next-sanity";
+import { Post } from "@/types/Post";
 
 type Props = {
   params: {
-    project: string;
+    post: string;
   };
 };
 
+export const revalidate = 30; // revalidate this page every 30 seconds
+
+export async function generateStaticParams() {
+  const data: Post[] = await client.fetch(groq`*[_type == "post"]{
+    "slug": slug.current,
+  }`);
+
+  return data.map((post) => ({
+    params: { slug: post.slug },
+  }));
+}
+
 export default async function PostPage({ params }: Props) {
-  const slug = params.project;
-  const project = await getPost(slug);
+  const slug = params.post;
+  const post = await getPost(slug);
 
   const RichTextComponents = {
     types: {
@@ -94,21 +109,21 @@ export default async function PostPage({ params }: Props) {
     <div>
       <header className="flex items-center justify-between">
         <h1 className="bg-gradient-to-r from-[#EB725A] via-[#EF4168] to-[#81CCA5] bg-clip-text text-transparent text-5xl drop-shadow font-extrabold">
-          {project.name}
+          {post.name}
         </h1>
         {/* <a
-          href={project.url}
-          title="View Project"
+          href={post.url}
+          title="View post"
           target="_blank"
           rel="noopener noreferrer"
           className="bg-gray-100 rounded-lg text-gray-500 font-bold py-3 px-4 whitespace-nowrap hover:bg-[#EF4168] hover:text-pink-100 transition cursor-pointer"
         >
-          View Project
+          View post
         </a> */}
       </header>
 
       <p className="text-gray-500">
-        {new Date(project._createdAt).toLocaleDateString("en-US", {
+        {new Date(post._createdAt).toLocaleDateString("en-US", {
           month: "long",
           day: "numeric",
           year: "numeric",
@@ -116,15 +131,15 @@ export default async function PostPage({ params }: Props) {
       </p>
 
       <Image
-        src={project.image}
-        alt={project.name}
+        src={post.image}
+        alt={post.name}
         width={1920}
         height={1080}
         className="mt-10 object-cover rounded-xl max-h-[500px]"
       />
 
       <div className="text-lg text-gray-700 dark:text-white mt-5">
-        <PortableText value={project.content} components={RichTextComponents} />
+        <PortableText value={post.content} components={RichTextComponents} />
       </div>
     </div>
   );
