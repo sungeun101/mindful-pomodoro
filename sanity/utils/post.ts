@@ -1,8 +1,8 @@
 import { groq } from "next-sanity";
 import { client } from "../lib/client";
-import { Project } from "@/types/Project";
+import { Post } from "@/types/Post";
 
-export async function getProjects(): Promise<Project[]> {
+export async function getPosts(): Promise<Post[]> {
   const data = client.fetch(groq`*[_type == "project"]{
     _id,
     _createdAt,
@@ -15,7 +15,7 @@ export async function getProjects(): Promise<Project[]> {
   return data;
 }
 
-export async function getProject(slug: string): Promise<Project> {
+export async function getPost(slug: string): Promise<Post> {
   const data = await client.fetch(
     groq`*[_type == "project" && slug.current == $slug][0]{
     _id,

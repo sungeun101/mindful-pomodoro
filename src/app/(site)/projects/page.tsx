@@ -1,11 +1,11 @@
 import React from "react";
-import { getProjects } from "../../../../sanity/utils/project";
+import { getPosts } from "../../../../sanity/utils/post";
 import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "../../../../sanity/lib/urlFor";
 
 export default async function BlogPage() {
-  const projects = await getProjects();
+  const projects = await getPosts();
   return (
     <div>
       <div className="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">

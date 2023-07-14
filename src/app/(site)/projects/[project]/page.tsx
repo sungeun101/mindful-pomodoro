@@ -1,5 +1,5 @@
 import React from "react";
-import { getProject } from "../../../../../sanity/utils/project";
+import { getPost } from "../../../../../sanity/utils/post";
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 import { urlFor } from "../../../../../sanity/lib/urlFor";
@@ -12,7 +12,7 @@ type Props = {
 
 export default async function PostPage({ params }: Props) {
   const slug = params.project;
-  const project = await getProject(slug);
+  const project = await getPost(slug);
 
   const RichTextComponents = {
     types: {

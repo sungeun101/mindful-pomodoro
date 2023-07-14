@@ -23,7 +23,7 @@
 // import StepContent from "@mui/material/StepContent";
 // import { mockVideos } from "./mockData";
 // import { FirebaseError } from "firebase/app";
-// import { getProjects } from "../../sanity/lib/client";
+// import { getPosts } from "../../sanity/lib/client";
 
 // export interface FormData {
 //   pomos: {
@@ -420,13 +420,15 @@
 // }
 
 import React from "react";
-import { getProjects } from "../../../sanity/utils/project";
+import { getPosts } from "../../../sanity/utils/post";
 import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "../../../sanity/lib/urlFor";
 
+export const revalidate = 30; // revalidate this page every 30 seconds
+
 export default async function Home() {
-  const projects = await getProjects();
+  const projects = await getPosts();
   console.log(projects);
   return (
     <div>
