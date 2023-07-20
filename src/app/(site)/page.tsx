@@ -445,7 +445,7 @@ export default async function Home() {
           poses, stretching, or breathing exercises.
         </p>
         <Link
-          href={"/yoga"}
+          href={"/timer"}
           className="rounded-lg font-bold py-3 px-4 whitespace-nowrap bg-[#EF4168] text-white transition cursor-pointer hover:scale-105"
         >
           Try it out
