@@ -446,7 +446,7 @@ export default async function Home() {
         </p>
         <Link
           href={"/yoga"}
-          className="hover:bg-gray-100 rounded-lg hover:text-gray-500 font-bold py-3 px-4 whitespace-nowrap bg-[#EF4168] text-pink-100 transition cursor-pointer"
+          className="rounded-lg font-bold py-3 px-4 whitespace-nowrap bg-[#EF4168] text-white transition cursor-pointer hover:scale-105"
         >
           Try it out
         </Link>
